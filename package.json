@@ -1,0 +1,11 @@
+{
+  "name": "yuki-chat",
+  "version": "1.0.0",
+  "main": "yuki.js",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2",
+    "openai": "^4.0.0"
+  }
+}
