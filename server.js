@@ -1,7 +1,6 @@
 import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
-import e from "express";
 
 dotenv.config();
 
@@ -10,7 +9,7 @@ app.use(express.json());
 app.use("/assets", express.static("public"));
 
 app.get("/", async (req, res) => {
-  res.sendFile("index.html", { root: process.cwd() });
+  res.sendFile("index.html", { root: import.meta.dirname });
 });
 
 // 🧠 PRIMER ENDPOINT → ChatGPT (texto)
