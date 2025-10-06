@@ -10,7 +10,11 @@ app.use(express.json());
 app.use("/assets", express.static("public"));
 
 app.get("/", async (req, res) => {
-  res.sendFile(path.join(import.meta.dirname, "index.html"));
+  try {
+    res.sendFile(path.join(process.cwd(), "index.html"));
+  } catch {
+    res.send("Error al cargar la pagina.");
+  }
 });
 
 // 🧠 PRIMER ENDPOINT → ChatGPT (texto)
