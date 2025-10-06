@@ -1,8 +1,11 @@
 {
   "name": "yuki-chat",
   "version": "1.0.0",
-  "main": "yuki.js",
+  "main": "./server.js",
   "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "dotenv": "^16.6.1",
     "express": "^4.19.2",

@@ -1,12 +1,17 @@
 import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
+import e from "express";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(express.static("public"));
+app.use("/assets", express.static("public"));
+
+app.get("/", async (req, res) => {
+  res.sendFile("index.html", { root: process.cwd() });
+});
 
 // 🧠 PRIMER ENDPOINT → ChatGPT (texto)
 app.post("/api/chat", async (req, res) => {
@@ -40,7 +45,6 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-
 // 🟣 SEGUNDO ENDPOINT → ElevenLabs (voz)
 // ⚠️ ESTE VA JUSTO DEBAJO DEL PRIMERO, Y ANTES DEL app.listen()
 app.post("/api/tts", async (req, res) => {
@@ -63,7 +67,7 @@ app.post("/api/tts", async (req, res) => {
             similarity_boost: 0.75,
           },
         }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -81,8 +85,6 @@ app.post("/api/tts", async (req, res) => {
     res.status(500).send("Error en la prueba de voz");
   }
 });
-
-
 
 // 🔊 Endpoint de prueba de voz
 app.get("/test-voice", async (req, res) => {
@@ -103,7 +105,7 @@ app.get("/test-voice", async (req, res) => {
             similarity_boost: 0.75,
           },
         }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -125,5 +127,5 @@ app.get("/test-voice", async (req, res) => {
 
 // 🚀 Finalmente, el servidor escucha aquí (NO toques esto)
 app.listen(3000, () =>
-  console.log("Servidor corriendo en http://localhost:3000")
+  console.log("Servidor corriendo en http://localhost:3000"),
 );

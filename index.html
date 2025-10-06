@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Yuki Nagato</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body>
+    <div class="chat-wrapper">
+      <div class="chat-container">
+        <div class="yuki-header">
+          <img src="/assets/yuki.png" alt="Yuki Nagato" class="yuki-avatar" />
+          <h2>Yuki Nagato Chat</h2>
+        </div>
+
+        <div id="messages"></div>
+
+        <div class="input-container">
+          <input
+            id="user-input"
+            type="text"
+            placeholder="Escribe un mensaje a Nagato..."
+          />
+          <button onclick="sendMessage()">Enviar</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/assets/script.js"></script>
+  </body>
+</html>
