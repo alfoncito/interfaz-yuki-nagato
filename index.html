@@ -3,30 +3,56 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat Yuki Nagato</title>
+    <title>Yuki Nagato</title>
+
+    <!-- 🩵 Fuente estilo técnico -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- 🌙 Estilos principales -->
     <link rel="stylesheet" href="/assets/style.css" />
+
+    <!-- 🔹 Ícono de pestaña -->
+    <link rel="icon" href="/assets/yuki-icon.png" type="image/png" />
   </head>
+
   <body>
+    <!-- 🖥️ Fondo tipo Matrix -->
+    <canvas id="matrixBackground"></canvas>
+
+    <!-- 🧠 Contenedor principal -->
     <div class="chat-wrapper">
       <div class="chat-container">
-        <div class="yuki-header">
-          <img src="/assets/Yuki.png" alt="Yuki Nagato" class="yuki-avatar" />
-          <h2>Yuki Nagato Chat</h2>
-        </div>
+        <!-- Encabezado -->
+        <header class="yuki-header">
+          <img src="Yuki.png" alt="Yuki Nagato" class="yuki-avatar" />
+          <h1>Yuki Nagato</h1>
+          <p class="subtitle">
+            Interfaz Humanoide — Unidad de Comunicación de la Entidad de Datos
+            Integrados
+          </p>
+        </header>
 
-        <div id="messages"></div>
+        <!-- Zona de mensajes -->
+        <main id="messages"></main>
 
+        <!-- Zona de entrada -->
         <div class="input-container">
           <input
             id="user-input"
             type="text"
-            placeholder="Escribe un mensaje a Nagato..."
+            placeholder="Escribe un comando..."
+            autocomplete="off"
+            onkeydown="if(event.key === 'Enter') sendMessage()"
           />
-          <button onclick="sendMessage()">Enviar</button>
+          <button onclick="sendMessage()">Ejecutar</button>
         </div>
       </div>
     </div>
 
+    <!-- ⚙️ Scripts -->
     <script type="module" src="/assets/script.js"></script>
   </body>
 </html>

@@ -1,7 +1,8 @@
+// ─── Importaciones y configuración ───────────────────────────────
 import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
-import path from "path";
+import path from 'path';
 
 dotenv.config();
 
@@ -9,127 +10,102 @@ const app = express();
 app.use(express.json());
 app.use("/assets", express.static(path.join(process.cwd(), "public")));
 
-app.get("/", async (req, res) => {
+const OPENAI_KEY = process.env.OPENAI_API_KEY;
+const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY; // 🔑 Nueva API key
+let chatHistory = [];
+
+app.get("/", (req, res) => {
   try {
     res.sendFile(path.join(process.cwd(), "index.html"));
-  } catch {
-    res.send("Error al cargar la pagina.");
+  } catch (e) {
+    res.send("Error al cargar la pagina");
   }
 });
 
-// 🧠 PRIMER ENDPOINT → ChatGPT (texto)
+// ─── CHAT ─────────────────────────────────────────────────────────
 app.post("/api/chat", async (req, res) => {
-  const { message } = req.body;
+  const userMessage = req.body.message;
+  chatHistory.push({ role: "user", content: userMessage });
+  if (chatHistory.length > 6) chatHistory = chatHistory.slice(-6);
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
+        "Authorization": `Bearer ${OPENAI_KEY}`,
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
-            content:
-              "Eres Yuki Nagato de Haruhi Suzumiya. Hablas con calma, precisión y lógica impecable. Tu tono es sereno, pausado y analítico.",
+            content: `Eres Yuki Nagato. Responde con lógica, calma y sin exageraciones.`,
           },
-          { role: "user", content: message },
+          ...chatHistory,
         ],
       }),
     });
 
     const data = await response.json();
-    res.json({ reply: data.choices[0].message.content });
+    const reply = data.choices?.[0]?.message?.content || "Error: no hay respuesta.";
+    chatHistory.push({ role: "assistant", content: reply });
+    res.json({ reply });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Error al conectar con OpenAI");
+    console.error("❌ Error /api/chat:", error);
+    res.status(500).json({ error: "Error al conectar con OpenAI" });
   }
 });
 
-// 🟣 SEGUNDO ENDPOINT → ElevenLabs (voz)
-// ⚠️ ESTE VA JUSTO DEBAJO DEL PRIMERO, Y ANTES DEL app.listen()
-app.post("/api/tts", async (req, res) => {
+// ─── VOZ (ElevenLabs) ─────────────────────────────────────────────
+app.post("/api/voice", async (req, res) => {
   const { text } = req.body;
+  if (!text) return res.status(400).send("Falta texto para sintetizar.");
+
+  // 🔊 Cambia este voice_id por la voz que prefieras
+  // Ejemplos de voces: Rachel, Bella, Domi, Elli, Josh, Arnold
+  const voice_id = "21m00Tcm4TlvDq8ikWAM"; // "Rachel" (neutral, clara)
 
   try {
+    console.log("🗣️ Solicitando voz a ElevenLabs...");
+
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVENLABS_VOICE_ID}`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream`,
       {
         method: "POST",
         headers: {
-          "xi-api-key": process.env.ELEVENLABS_API_KEY,
+          "xi-api-key": ELEVENLABS_API_KEY,
           "Content-Type": "application/json",
+          "Accept": "audio/mpeg",
         },
         body: JSON.stringify({
           text,
-          model_id: "eleven_multilingual_v2",
           voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
+            stability: 0.4,
+            similarity_boost: 0.8,
           },
         }),
-      },
+      }
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText);
+      const err = await response.text();
+      throw new Error(`Error HTTP ${response.status}: ${err}`);
     }
 
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const audioBuffer = await response.arrayBuffer();
+    res.set("Content-Type", "audio/mpeg");
+    res.send(Buffer.from(audioBuffer));
 
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.send(buffer);
+    console.log("✅ Voz generada correctamente por ElevenLabs.");
   } catch (error) {
-    console.error("❌ Error en test-voice:", error);
-    res.status(500).send("Error en la prueba de voz");
+    console.error("❌ Error al generar la voz:", error);
+    res.status(500).send("Error generando voz con ElevenLabs");
   }
 });
 
-// 🔊 Endpoint de prueba de voz
-app.get("/test-voice", async (req, res) => {
-  try {
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVENLABS_VOICE_ID}`,
-      {
-        method: "POST",
-        headers: {
-          "xi-api-key": process.env.ELEVENLABS_API_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: "Hola, soy Yuki Nagato. Esta es una prueba de voz.",
-          model_id: "eleven_multilingual_v2",
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-          },
-        }),
-      },
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("❌ Error detallado de ElevenLabs:", errorText);
-      throw new Error(errorText);
-    }
-
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.send(buffer);
-  } catch (error) {
-    console.error("❌ Error en test-voice:", error);
-    res.status(500).send(`Error en la prueba de voz: ${error.message}`);
-  }
-});
-
-// 🚀 Finalmente, el servidor escucha aquí (NO toques esto)
-app.listen(3000, () =>
-  console.log("Servidor corriendo en http://localhost:3000"),
+// ─── Iniciar servidor ───────────────────────────────────────────
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () =>
+  console.log(`🚀 Servidor activo en http://localhost:${PORT}`)
 );

@@ -8,21 +8,31 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
+  overflow: hidden;
+}
+
+/* === Fondo tipo "Matrix" === */
+#matrixBackground {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: black;
+  filter: blur(0.3px) brightness(1.2);
 }
 
 /* === Contenedor principal === */
 .chat-wrapper {
-  background: rgba(28, 30, 40, 0.85);
-  border: 1px solid rgba(80, 120, 255, 0.2);
+  background: rgba(28, 30, 40, 0.7);
+  border: 1px solid rgba(80, 120, 255, 0.25);
   box-shadow: 0 0 25px rgba(80, 120, 255, 0.15);
   border-radius: 20px;
   padding: 20px;
-  width: 400px;
-  max-width: 90%;
+  width: 85%;
+  max-width: 900px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px) saturate(120%);
 }
 
 /* === Cabecera con imagen === */
@@ -42,7 +52,7 @@ body {
 
 .yuki-header h1 {
   font-size: 1.5em;
-  margin: 10px 0 0 0;
+  margin: 10px 0 0;
   color: #b7c5ff;
 }
 
@@ -52,36 +62,32 @@ body {
 }
 
 /* === Contenedor del chat === */
-/* === Área total del chat === */
 .chat-container {
   position: relative;
   width: 100%;
-  max-width: 600px;
-  height: 80vh; /* evita que crezca con los mensajes */
-  margin: 0 auto;
+  height: 80vh;
   display: flex;
   flex-direction: column;
-  background: rgba(25, 28, 41, 0.75);
+  background: rgba(20, 22, 34, 0.75);
   border-radius: 15px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-  overflow: hidden; /* evita que nada se salga */
+  overflow: hidden;
 }
 
-/* === Contenedor de mensajes con scroll interno === */
+/* === Contenedor de mensajes === */
 #messages {
   flex: 1;
   padding: 15px;
   overflow-y: auto;
-  overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
-/* === Zona del input y botón fija === */
+/* === Zona del input === */
 .input-container {
   display: flex;
   gap: 10px;
   padding: 10px;
-  background: rgba(35, 39, 59, 0.9);
+  background: rgba(35, 39, 59, 0.85);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -92,123 +98,125 @@ body {
   border-radius: 10px;
   padding: 10px;
   font-size: 1em;
-}
-
-.input-container button {
-  background-color: #4e7eff;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.input-container button:hover {
-  background-color: #6c94ff;
-}
-
-
-/* === Input y botón === */
-.input-area {
-  display: flex;
-  gap: 10px;
-}
-
-#user-input {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
-  outline: none;
 }
 
-#user-input::placeholder {
+.input-container input::placeholder {
   color: #aaa;
 }
 
-button {
-  background-color: #5b7aff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 15px;
+.input-container button {
+  background-color: #2b66d7;
   color: white;
+  border: none;
+  padding: 10px 15px;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
-button:hover {
-  background-color: #6d8cff;
+.input-container button:hover {
+  background-color: #414861;
 }
 
-/* === Animación de Yuki escribiendo === */
+/* === Indicador de Yuki pensando === */
 .typing-indicator {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 30px;
-  border-radius: 15px;
-  background: rgba(115, 153, 255, 0.15);
-  margin: 8px 0;
+  justify-content: flex-start;
   padding: 6px 10px;
-  box-shadow: 0 0 8px rgba(115, 153, 255, 0.2);
-}
-
-.typing-indicator span {
-  width: 8px;
-  height: 8px;
-  background-color: #b7c5ff;
-  border-radius: 50%;
-  margin: 0 3px;
-  opacity: 0.4;
-  animation: typing 1.5s infinite ease-in-out;
-}
-
-.typing-indicator span:nth-child(1) {
-  animation-delay: 0s;
-}
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing {
-  0%, 60%, 100% {
-    transform: translateY(0);
-    opacity: 0.4;
-  }
-  30% {
-    transform: translateY(-6px);
-    opacity: 1;
-  }
-}
-/* === Estilo para el mensaje tipeado de Yuki === */
-.yuki-message {
-  background-color: rgba(115, 153, 255, 0.15);
-  color: #e8ebf1;
-  border-radius: 10px;
-  padding: 10px;
   margin: 8px 0;
-  width: fit-content;
-  max-width: 80%;
-  line-height: 1.5;
+  background: rgba(115, 153, 255, 0.1);
+  border-radius: 10px;
   box-shadow: 0 0 8px rgba(115, 153, 255, 0.2);
-  animation: fadeIn 0.3s ease-in;
+  font-family: monospace;
+  font-size: 1.1em;
+  color: #c5a3ff;
 }
 
+.typing-indicator::after {
+  content: "_";
+  display: inline-block;
+  width: 10px;
+  animation: blinkUnderscore 1s steps(1) infinite;
+}
+
+@keyframes blinkUnderscore {
+  50% { opacity: 0; }
+}
+
+/* === Estilos de los mensajes === */
+.message {
+  max-width: 85%;
+  margin: 8px 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  display: inline-block;
+  animation: fadeIn 0.3s ease;
+}
+
+/* === Mensajes del usuario (tú) === */
+.user-message {
+  align-self: flex-end;
+  background: linear-gradient(145deg, rgba(85, 140, 255, 0.25), rgba(50, 100, 255, 0.2));
+  color: #eaf1ff;
+  border: 1px solid rgba(100, 160, 255, 0.4);
+  box-shadow: 0 0 10px rgba(90, 140, 255, 0.25);
+  margin-left: auto;
+  text-align: right;
+  border-radius: 14px 14px 0 14px;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.user-message:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(120, 170, 255, 0.5);
+}
+
+/* === Mensajes de Yuki === */
+.yuki-message {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.07);
+  color: #c7bfff;
+  border: 1px solid rgba(197, 163, 255, 0.25);
+  margin-right: auto;
+  text-align: left;
+  font-family: 'Share Tech Mono', monospace;
+  animation: softGlow 4s ease-in-out infinite;
+}
+
+/* === Animación de entrada === */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Efecto de respiración sutil === */
+@keyframes softGlow {
+  0%, 100% { text-shadow: 0 0 4px rgba(197,163,255,0.4); }
+  50% { text-shadow: 0 0 10px rgba(197,163,255,0.8); }
+}
+
+/* === Indicador "pensando" alternativo === */
+.thinking-indicator {
+  margin: 8px 0;
+  padding: 4px 10px;
+  color: #c5a3ff;
+  font-family: monospace;
+  letter-spacing: 1px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.thinking-cursor {
+  display: inline-block;
+  animation: blinkCursor 0.9s steps(1) infinite;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+@keyframes blinkCursor {
+  50% { opacity: 0; }
 }

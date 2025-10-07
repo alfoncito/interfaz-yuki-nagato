@@ -1,43 +1,98 @@
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("✅ Página cargada completamente.");
+import "./matrix.js";
 
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("✅ Interfaz de Yuki lista.");
+
+  const messages = document.getElementById("messages");
+
+  // === ÁREA DE TIPEO CON CURSOR ===
+  const typingBox = document.createElement("div");
+  typingBox.id = "typing-area";
+  typingBox.innerHTML = `<span id="typing-text"></span><span class="cursor"></span>`;
+  messages.appendChild(typingBox);
+
+  const typingText = document.getElementById("typing-text");
+  const cursor = document.querySelector(".cursor");
+
+  // === FUNCIÓN DE TIPEO NATURAL ===
+  async function typeMessage(element, message) {
+    element.innerHTML = "";
+    cursor.style.opacity = 0; // Ocultar cursor durante escritura
+
+    for (let i = 0; i < message.length; i++) {
+      element.innerHTML += message[i];
+      const delay = 40 + Math.random() * 60;
+      await new Promise((r) => setTimeout(r, delay));
+      if (Math.random() < 0.02) {
+        await new Promise((r) => setTimeout(r, 400 + Math.random() * 300));
+      }
+    }
+
+    cursor.style.opacity = 1; // Mostrar cursor al final
+  }
+
+  // === FUNCIÓN PARA AÑADIR MENSAJES ===
+  function addMessage(sender, text) {
+    const div = document.createElement("div");
+    div.classList.add("message");
+
+    if (sender.toLowerCase() === "tú" || sender.toLowerCase() === "tu") {
+      div.classList.add("user-message");
+    } else {
+      div.classList.add("yuki-message");
+    }
+
+    div.textContent = `${sender}: ${text}`;
+    messages.appendChild(div);
+
+    div.style.opacity = 0;
+    setTimeout(() => (div.style.opacity = 1), 50);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  // === INDICADOR DE "PENSANDO" ===
+  function showThinkingCursor() {
+    const thinking = document.createElement("div");
+    thinking.classList.add("thinking-indicator");
+    thinking.innerHTML = `<span class="thinking-cursor">_</span>`;
+    messages.appendChild(thinking);
+    messages.scrollTop = messages.scrollHeight;
+    return thinking;
+  }
+
+  // === NUEVA FUNCIÓN DE VOZ USANDO HUGGING FACE ===
+  async function playYukiVoice(text) {
+    try {
+      const response = await fetch("/api/voice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!response.ok) {
+        console.error("⚠️ Error al generar voz:", await response.text());
+        return;
+      }
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } catch (err) {
+      console.error("❌ Error al reproducir la voz de Yuki:", err);
+    }
+  }
+
+  // === FUNCIÓN PRINCIPAL DE ENVÍO ===
   async function sendMessage() {
-    const input = document.getElementById("user-input");
-    const message = input.value.trim();
+    const userInput = document.getElementById("user-input");
+    const message = userInput.value.trim();
     if (!message) return;
 
     addMessage("Tú", message);
-    input.value = "";
+    userInput.value = "";
 
-    // 🟣 Mostrar animación de "Yuki escribiendo"
-    const typingIndicator = document.createElement("div");
-    typingIndicator.classList.add("typing-indicator");
-    typingIndicator.innerHTML = `
-    <span></span>
-    <span></span>
-    <span></span>
-  `;
-    const messages = document.getElementById("messages");
-    messages.appendChild(typingIndicator);
-    messages.scrollTop = messages.scrollHeight;
-    function typeMessage(sender, text, speed = 20) {
-      const messages = document.getElementById("messages");
-      const div = document.createElement("div");
-      div.classList.add("yuki-message");
-      div.textContent = `${sender}: `;
-      messages.appendChild(div);
-
-      let i = 0;
-      function typeNext() {
-        if (i < text.length) {
-          div.textContent += text.charAt(i);
-          i++;
-          setTimeout(typeNext, speed);
-          messages.scrollTop = messages.scrollHeight; // autoscroll
-        }
-      }
-      typeNext();
-    }
+    const thinkingCursor = showThinkingCursor();
 
     try {
       const response = await fetch("/api/chat", {
@@ -47,28 +102,28 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const data = await response.json();
+      thinkingCursor.remove();
 
-      // 🔵 Eliminar animación al recibir respuesta
-      typingIndicator.remove();
+      const yukiResponse = document.createElement("div");
+      yukiResponse.classList.add("yuki-message");
+      messages.appendChild(yukiResponse);
 
-      // 💬 Mostrar respuesta con animación de tipeo
-      typeMessage("YUKI.N>", data.reply);
+      await typeMessage(yukiResponse, `YUKI.N> ${data.reply}`);
+
+      // 🔊 Reproduce la voz desde Hugging Face
+      await playYukiVoice(data.reply);
+
+      messages.scrollTop = messages.scrollHeight;
     } catch (error) {
-      typingIndicator.remove();
-      console.error("❌ Error en fetch:", error);
+      console.error("❌ Error en /api/chat:", error);
+      if (thinkingCursor) thinkingCursor.remove();
       addMessage(
         "YUKI.N>",
-        "No es posible sincronizar con la entidad de datos integrados.",
+        "Error crítico. No hay enlace con la red de datos.",
       );
     }
   }
 
-  window.sendMessage = sendMessage; // 👈 Esto la expone al botón del HTML
-
-  function addMessage(sender, text) {
-    const messages = document.getElementById("messages");
-    const div = document.createElement("div");
-    div.textContent = `${sender}: ${text}`;
-    messages.appendChild(div);
-  }
+  // Hacer disponible la función al botón
+  window.sendMessage = sendMessage;
 });
