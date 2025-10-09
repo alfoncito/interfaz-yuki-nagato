@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   typingBox.innerHTML = `<span id="typing-text"></span><span class="cursor"></span>`;
   messages.appendChild(typingBox);
   cursor = document.querySelector(".cursor");
+  document.getElementById("user-input")?.focus();
 
   // === FUNCIÓN DE TIPEO NATURAL ===
   async function typeMessage(element, message) {
@@ -34,8 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // === FUNCIÓN PARA AÑADIR MENSAJES ===
-  const renderMessage = async (sender, text) => {
-    let msgCloud = document.createElement("div");
+  const renderMessage = async (sender, text, opts = {}) => {
+    let { typing } = Object.assign({ typing: true }, opts),
+      msgCloud = document.createElement("div");
 
     msgCloud.classList.add("message");
     messages.appendChild(msgCloud);
@@ -46,20 +48,22 @@ document.addEventListener("DOMContentLoaded", () => {
       msgCloud.textContent = `Tú: ${text}`;
     } else {
       msgCloud.classList.add("yuki-message");
-      await typeMessage(msgCloud, `YUKI.N>: ${text}`);
+      if (typing) await typeMessage(msgCloud, `YUKI.N>: ${text}`);
+      else msgCloud.textContent = `YUKI.N: ${text}`;
     }
 
+    messages.scrollTop = messages.scrollHeight;
     msgCloud.style.opacity = 0;
     setTimeout(() => (msgCloud.style.opacity = 1), 50);
   };
-
-  // === FUNCIONES DE GUARDADO ===
 
   // Al cargar la página, restaurar historial
   window.addEventListener("load", () => {
     let history = getHistory();
 
-    history.forEach((msg) => renderMessage(msg.role, msg.content));
+    history.forEach((msg) =>
+      renderMessage(msg.role, msg.content, { typing: false }),
+    );
   });
 
   // === INDICADOR DE "PENSANDO" ===
@@ -129,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       console.error("❌ Error en /api/chat:", err);
       thinkingCursor?.remove();
-      historyLogPrevError();
+      historyErrorPrevLog();
       saveMessage("yuki", err.message ?? "Error", true);
       await renderMessage("yuki", err.message ?? "Error");
     }
@@ -157,7 +161,7 @@ const getHistory = () => {
   return JSON.parse(sessionStorage.getItem("chatHistory") ?? "[]");
 };
 
-const historyLogPrevError = () => {
+const historyErrorPrevLog = () => {
   let history = getHistory(),
     lastI = history.length - 1;
 
