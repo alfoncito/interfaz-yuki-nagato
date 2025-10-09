@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/assets/style.css" />
 
     <!-- 🔹 Ícono de pestaña -->
-    <link rel="icon" href="/assets/yuki-icon.png" type="image/png" />
+    <link rel="icon" href="/assets/BrigadaSOS-0.png" type="image/png" />
   </head>
 
   <body>
@@ -26,14 +26,10 @@
     <div class="chat-wrapper">
       <div class="chat-container">
         <!-- Encabezado -->
-        <header class="yuki-header">
-          <img src="Yuki.png" alt="Yuki Nagato" class="yuki-avatar" />
-          <h1>Yuki Nagato</h1>
-          <p class="subtitle">
-            Interfaz Humanoide — Unidad de Comunicación de la Entidad de Datos
-            Integrados
-          </p>
-        </header>
+      <header class="yuki-header">
+        <img src="yuki.png" alt="Nagato Yuki" class="yuki-avatar" />
+        <div class="Nombre"><h1 style="font-family: Hiragino Sans">長門 有希❆<span style="font-family: Arial; font-size: 18px; font-style: italic;">Nagato Yuki</span>.</h1></div>
+      </header>
 
         <!-- Zona de mensajes -->
         <main id="messages"></main>
@@ -47,7 +43,6 @@
             autocomplete="off"
             onkeydown="if(event.key === 'Enter') sendMessage()"
           />
-          <button onclick="sendMessage()">Ejecutar</button>
         </div>
       </div>
     </div>

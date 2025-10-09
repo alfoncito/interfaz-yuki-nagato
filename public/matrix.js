@@ -5,7 +5,8 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789アイウエオカキクケコΣΩΔλπβΦΨΞ";
+const letters =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ❄0123456789❅アイウエオカキクケコ❆ΣΩΔλπβΦΨΞ";
 const fontSize = 16;
 const particles = [];
 const maxParticles = 120; // cantidad de caracteres visibles
@@ -79,4 +80,3 @@ window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 });
-

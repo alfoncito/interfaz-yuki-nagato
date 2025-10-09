@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const div = document.createElement("div");
     div.classList.add("message");
 
-    if (sender.toLowerCase() === "tú" || sender.toLowerCase() === "tu") {
+    if (sender.toLowerCase() === "tú") {
       div.classList.add("user-message");
     } else {
       div.classList.add("yuki-message");
@@ -49,6 +49,45 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => (div.style.opacity = 1), 50);
     messages.scrollTop = messages.scrollHeight;
   }
+
+  // Al enviar mensaje
+  async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const message = input.value.trim();
+    if (!message) return;
+
+    appendMessage("user", message);
+
+    // 🧠 Guardar en localStorage
+    saveMessage("user", message);
+
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await res.json();
+    appendMessage("yuki", data.reply);
+
+    // Guardar respuesta también
+    saveMessage("yuki", data.reply);
+
+    input.value = "";
+  }
+
+  // === FUNCIONES DE GUARDADO ===
+  function saveMessage(role, content) {
+    const history = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+    history.push({ role, content });
+    localStorage.setItem("chatHistory", JSON.stringify(history));
+  }
+
+  // Al cargar la página, restaurar historial
+  window.addEventListener("load", () => {
+    const history = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+    history.forEach((msg) => appendMessage(msg.role, msg.content));
+  });
 
   // === INDICADOR DE "PENSANDO" ===
   function showThinkingCursor() {

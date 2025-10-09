@@ -2,7 +2,7 @@
 body {
   background: radial-gradient(circle at top, #1a1c25 0%, #0c0d11 100%);
   color: #e8ebf1;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,7 +22,7 @@ body {
 
 /* === Contenedor principal === */
 .chat-wrapper {
-  background: rgba(28, 30, 40, 0.7);
+  background: rgba(28, 30, 40, 0.1);
   border: 1px solid rgba(80, 120, 255, 0.25);
   box-shadow: 0 0 25px rgba(80, 120, 255, 0.15);
   border-radius: 20px;
@@ -38,7 +38,9 @@ body {
 /* === Cabecera con imagen === */
 .yuki-header {
   text-align: center;
-  margin-bottom: 15px;
+  margin-top: 50px; /* espacio para el avatar flotante */
+  position: relative;
+  z-index: 2;
 }
 
 .yuki-avatar {
@@ -47,18 +49,43 @@ body {
   border-radius: 50%;
   border: 2px solid #7399ff;
   object-fit: cover;
-  box-shadow: 0 0 10px rgba(115, 153, 255, 0.5);
+  box-shadow:
+    0 0 10px rgba(115, 153, 255, 0.5),
+    0 0 20px rgba(115, 153, 255, 0.2) inset;
+  filter: brightness(1.1) contrast(1.1);
+  position: absolute;
+  top: -90px; /* 👈 hace que sobresalga hacia arriba */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* === Contenedor del Nombre === */
+.Nombre {
+  background-color: rgba(2, 3, 4, 0.51);
+  display: inline-block;
+  border-radius: 5px;
+  padding: 1px 12px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .yuki-header h1 {
-  font-size: 1.5em;
-  margin: 10px 0 0;
-  color: #b7c5ff;
+  margin-top: 5px; /* deja espacio debajo del avatar */
+  margin-bottom: 10px;
+  font-size: 1.8em;
+  background: linear-gradient(135deg, #b7c5ff 0%, #8fa2ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 300;
+  letter-spacing: 1px;
+  font-weight: bold;
 }
 
 .subtitle {
   font-size: 0.9em;
   color: #8fa2ff;
+  letter-spacing: 2px;
+  margin-top: 5px;
 }
 
 /* === Contenedor del chat === */
@@ -71,53 +98,129 @@ body {
   background: rgba(20, 22, 34, 0.75);
   border-radius: 15px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
 }
 
 /* === Contenedor de mensajes === */
 #messages {
   flex: 1;
-  padding: 15px;
+  padding: 22px 25px;
   overflow-y: auto;
   scroll-behavior: smooth;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(115, 153, 255, 0.05),
+      transparent 70%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(0, 255, 180, 0.05),
+      transparent 70%
+    );
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    inset 0 0 25px rgba(115, 153, 255, 0.1),
+    0 0 12px rgba(0, 255, 200, 0.05);
+  position: relative;
+}
+
+/* === Scrollbar personalizado === */
+#messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+#messages::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+}
+
+#messages::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00ffa6, #7399ff);
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0, 255, 180, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#messages::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #1e90ff, #00ffa6);
+  box-shadow: 0 0 12px rgba(0, 255, 180, 0.6);
+}
+
+/* === Efecto de “niebla digital” suave === */
+#messages::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(115, 153, 255, 0.05),
+      transparent 70%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(0, 255, 180, 0.05),
+      transparent 70%
+    );
+  pointer-events: none;
 }
 
 /* === Zona del input === */
 .input-container {
   display: flex;
-  gap: 10px;
-  padding: 10px;
-  background: rgba(35, 39, 59, 0.85);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  align-items: center;
+  gap: 12px;
+  padding: 1px 14px;
+  background: rgba(10, 10, 20, 0.75);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 18px 18px;
 }
 
+/* === Campo de texto === */
+.input-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1px 16px;
+  background: rgba(10, 10, 20, 0.75);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 18px 18px;
+}
+
+/* === INPUT LIMPIO Y ELEGANTE === */
 .input-container input {
   flex: 1;
   border: none;
   outline: none;
-  border-radius: 10px;
-  padding: 10px;
+  padding: 8px 14px; /* 🔹 Menor altura */
   font-size: 1em;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  color: #ffffff;
+  background: transparent; /* 🔹 Elimina la “caja” visible */
+  caret-shape: underscore; /* 🔹 Cursor plano (solo compatible con navegadores modernos) */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: 0.5px;
+}
+
+/* Para navegadores que no soportan caret-shape */
+.input-container input {
+  caret-color: #8fa2ff; /* 🔹 Color violeta del cursor */
 }
 
 .input-container input::placeholder {
-  color: #aaa;
+  color: rgba(255, 255, 255, 0.35);
+  font-style: italic;
+  opacity: 0.8;
 }
 
-.input-container button {
-  background-color: #2b66d7;
-  color: white;
+/* 🔹 Desactiva efectos al pasar el cursor o enfocar */
+.input-container input:focus,
+.input-container input:hover {
+  background: transparent;
   border: none;
-  padding: 10px 15px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.input-container button:hover {
-  background-color: #414861;
+  box-shadow: none;
 }
 
 /* === Indicador de Yuki pensando === */
@@ -143,7 +246,9 @@ body {
 }
 
 @keyframes blinkUnderscore {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* === Estilos de los mensajes === */
@@ -160,15 +265,21 @@ body {
 
 /* === Mensajes del usuario (tú) === */
 .user-message {
-  align-self: flex-end;
-  background: linear-gradient(145deg, rgba(85, 140, 255, 0.25), rgba(50, 100, 255, 0.2));
+  align-self: flex-start;
+  background: linear-gradient(
+    145deg,
+    rgba(85, 140, 255, 0.25),
+    rgba(50, 100, 255, 0.2)
+  );
   color: #eaf1ff;
   border: 1px solid rgba(100, 160, 255, 0.4);
   box-shadow: 0 0 10px rgba(90, 140, 255, 0.25);
   margin-left: auto;
   text-align: right;
   border-radius: 14px 14px 0 14px;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.3s ease;
 }
 
 .user-message:hover {
@@ -184,20 +295,31 @@ body {
   border: 1px solid rgba(197, 163, 255, 0.25);
   margin-right: auto;
   text-align: left;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   animation: softGlow 4s ease-in-out infinite;
 }
 
 /* === Animación de entrada === */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* === Efecto de respiración sutil === */
 @keyframes softGlow {
-  0%, 100% { text-shadow: 0 0 4px rgba(197,163,255,0.4); }
-  50% { text-shadow: 0 0 10px rgba(197,163,255,0.8); }
+  0%,
+  100% {
+    text-shadow: 0 0 4px rgba(197, 163, 255, 0.4);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(197, 163, 255, 0.8);
+  }
 }
 
 /* === Indicador "pensando" alternativo === */
@@ -218,5 +340,8 @@ body {
 }
 
 @keyframes blinkCursor {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
+
