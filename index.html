@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
@@ -26,10 +26,18 @@
     <div class="chat-wrapper">
       <div class="chat-container">
         <!-- Encabezado -->
-      <header class="yuki-header">
-        <img src="yuki.png" alt="Nagato Yuki" class="yuki-avatar" />
-        <div class="Nombre"><h1 style="font-family: Hiragino Sans">長門 有希❆<span style="font-family: Arial; font-size: 18px; font-style: italic;">Nagato Yuki</span>.</h1></div>
-      </header>
+        <header class="yuki-header">
+          <img src="yuki.png" alt="Nagato Yuki" class="yuki-avatar" />
+          <div class="Nombre">
+            <h1 style="font-family: Hiragino Sans">
+              長門 有希 ❆
+              <span
+                style="font-family: Arial; font-size: 18px; font-style: italic"
+                >Nagato Yuki</span
+              >.
+            </h1>
+          </div>
+        </header>
 
         <!-- Zona de mensajes -->
         <main id="messages"></main>
@@ -41,7 +49,6 @@
             type="text"
             placeholder="Escribe un comando..."
             autocomplete="off"
-            onkeydown="if(event.key === 'Enter') sendMessage()"
           />
         </div>
       </div>

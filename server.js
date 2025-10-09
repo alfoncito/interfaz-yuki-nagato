@@ -24,8 +24,6 @@ const ELEVEN_API_KEYS = [
 const voicesDir = path.join(process.cwd(), "voices");
 if (!fs.existsSync(voicesDir)) fs.mkdirSync(voicesDir);
 
-let chatHistory = [];
-
 app.get("/", (req, res) => {
   try {
     res.sendFile(path.join(process.cwd(), "index.html"));
@@ -36,15 +34,30 @@ app.get("/", (req, res) => {
 
 // ─── CHAT ─────────────────────────────────────────────────────────
 app.post("/api/chat", async (req, res) => {
-  const userMessage = req.body.message;
-  chatHistory.push({ role: "user", content: userMessage });
-  if (chatHistory.length > 6) chatHistory = chatHistory.slice(-6);
+  //const userMessage = req.body.message;
+  //chatHistory.push({ role: "user", content: userMessage });
+  //if (chatHistory.length > 6) chatHistory = chatHistory.slice(-6);
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    let { chat } = req.body,
+      response,
+      data,
+      reply;
+
+    if (chat.length > 6) chat = chat.slice(-6);
+
+    chat = chat.map((msg) => {
+      if (msg.role === "you") msg.role = "user";
+      else if (msg.role === "yuki") msg.role = "assistant";
+      else throw new Error(`Role ${msg.role} invalido.`);
+
+      return msg;
+    });
+
+    response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${OPENAI_KEY}`,
+        Authorization: `Bearer ${OPENAI_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -54,18 +67,24 @@ app.post("/api/chat", async (req, res) => {
             role: "system",
             content: `Eres Yuki Nagato. Responde con lógica, calma y sin exageraciones.`,
           },
-          ...chatHistory,
+          ...chat,
         ],
       }),
     });
 
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "Lo siento, no puedo sincronizarme con entidad de datos integrados";
-    chatHistory.push({ role: "assistant", content: reply });
+    if (!response.ok) throw new Error();
+    data = await response.json();
+    reply = data.choices?.[0]?.message?.content;
+
+    if (!reply) throw new Error();
+
     res.json({ reply });
-  } catch (error) {
-    console.error("❌ Error /api/chat:", error);
-    res.status(500).json({ error: "Error al conectar con OpenAI" });
+  } catch (err) {
+    console.error("❌ Error /api/chat:", err);
+    res.status(500).json({
+      error:
+        "Lo siento, no puedo sincronizarme con la entidad de datos integrados",
+    });
   }
 });
 
@@ -77,7 +96,10 @@ app.post("/api/voice", async (req, res) => {
   try {
     // Convertir texto a nombre de archivo seguro
     const safeFileName =
-      text.toLowerCase().replace(/[^a-z0-9áéíóúüñ]+/gi, "_").slice(0, 60) + ".mp3";
+      text
+        .toLowerCase()
+        .replace(/[^a-z0-9áéíóúüñ]+/gi, "_")
+        .slice(0, 60) + ".mp3";
     const filePath = path.join(voicesDir, safeFileName);
 
     // Si ya existe en caché, lo devolvemos directamente
@@ -110,7 +132,7 @@ app.post("/api/voice", async (req, res) => {
                 similarity_boost: 0.8,
               },
             }),
-          }
+          },
         );
 
         if (!response.ok) {
@@ -134,7 +156,6 @@ app.post("/api/voice", async (req, res) => {
 
     res.set("Content-Type", "audio/mpeg");
     res.send(Buffer.from(audioBuffer));
-
   } catch (error) {
     console.error("❌ Error al generar la voz:", error);
     res.status(500).send("Error generando voz con ElevenLabs");
@@ -144,5 +165,5 @@ app.post("/api/voice", async (req, res) => {
 // ─── Iniciar servidor ───────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
-  console.log(`🚀 Servidor activo en http://localhost:${PORT}`)
+  console.log(`🚀 Servidor activo en http://localhost:${PORT}`),
 );
