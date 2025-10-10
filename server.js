@@ -14,6 +14,7 @@ app.use("/assets", express.static(path.join(process.cwd(), "public")));
 const OPENAI_KEY = process.env.OPENAI_API_KEY;
 
 // Puedes agregar varias claves de ElevenLabs (para respaldo)
+/*
 const ELEVEN_API_KEYS = [
   process.env.ELEVEN_API_KEY_1,
   process.env.ELEVEN_API_KEY_2,
@@ -23,6 +24,7 @@ const ELEVEN_API_KEYS = [
 // Carpeta para guardar audios cacheados
 const voicesDir = path.join(process.cwd(), "voices");
 if (!fs.existsSync(voicesDir)) fs.mkdirSync(voicesDir);
+*/
 
 app.get("/", (req, res) => {
   try {
@@ -89,6 +91,7 @@ app.post("/api/chat", async (req, res) => {
 });
 
 // ─── VOZ (ElevenLabs con cache y respaldo) ───────────────────────
+/*
 app.post("/api/voice", async (req, res) => {
   const { text } = req.body;
   if (!text) return res.status(400).send("Falta texto para sintetizar.");
@@ -161,6 +164,7 @@ app.post("/api/voice", async (req, res) => {
     res.status(500).send("Error generando voz con ElevenLabs");
   }
 });
+*/
 
 // ─── Iniciar servidor ───────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
